@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+   xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+   xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+   x:Class="M3SDKMaui.MainPage">
+
+   <Grid RowDefinitions="auto,auto,auto,auto,auto,*" Padding="5">
+
+      <Label Grid.Row="0" Text="M3Mobile Scanner Test" 
+           HorizontalOptions="Center" VerticalOptions="CenterAndExpand" 
+           FontSize="24" Margin="20" />
+
+      <Grid Grid.Row="1" ColumnDefinitions="*,*" Padding="5" >
+         <Button Grid.Column="0" Text="Enable" Clicked="Button_Clicked_Enable"/>
+         <Button Grid.Column="1" Text="Disable" Clicked="Button_Clicked_Disable"/>
+      </Grid>
+
+      <Grid Grid.Row="2" ColumnDefinitions="*,*,*" RowDefinitions="auto,auto" Padding="5" >
+         <Label Grid.Row="0" Grid.Column="0" Text="Param" />
+         <Label Grid.Row="0" Grid.Column="1" Text="Value" />
+         <Button Grid.Row="0" Grid.Column="2" Text="GET"  Clicked="Button_Clicked_GetParam"/>
+
+         <Editor Grid.Row="1" Grid.Column="0" x:Name="edParam" Text="" />
+         <Editor Grid.Row="1" Grid.Column="1" x:Name="edValue" Text="" />
+         <Button Grid.Row="1" Grid.Column="2" Text="SET" Clicked="Button_Clicked_SetParam"/>
+      </Grid>
+
+      <Grid Grid.Row="3" ColumnDefinitions="*,*" Padding="5" >
+         <Button Grid.Column="0" Text="Start Decode" Clicked="Button_Clicked_Start" />
+         <Button Grid.Column="1" Text="Stop Decode" Clicked="Button_Clicked_Stop" />
+      </Grid>
+
+      <HorizontalStackLayout Grid.Row="4" Padding="5" >
+         <Label Text="Key Disable" VerticalOptions="Center"/>
+         <CheckBox x:Name="chkKeyDisable" VerticalOptions="Center" CheckedChanged="chkKeyDisable_CheckedChanged_KeyDisable"/>
+      </HorizontalStackLayout>
+
+      <ListView Grid.Row="5" x:Name="listView_scanned" BackgroundColor="LightGray" Margin="5" />
+
+   </Grid>
+
+</ContentPage>
