@@ -1,12 +1,13 @@
 ﻿using System.Collections.ObjectModel;
+using static M3SDKMaui.M3Scanner;
 
 
 namespace M3SDKMaui;
-public partial class MainPage : ContentPage
+public partial class TestPage : ContentPage
 {
    private ObservableCollection<string> _scanned { get; set; }
 
-   public MainPage()
+   public TestPage()
    {
       InitializeComponent();
 
@@ -27,14 +28,9 @@ public partial class MainPage : ContentPage
 
       scan.RegisterReceiver();
 
-      MessagingCenter.Subscribe<App, string>(this, "barcode", (sender, arg) =>
+      MessagingCenter.Subscribe<App, M3Barcode>(this, "barcode", (sender, arg) =>
       {
-         _scanned.Add("Data: " + arg);
-      });
-
-      MessagingCenter.Subscribe<App, int>(this, "value", (sender, arg) =>
-      {
-         edValue.Text = "" + arg;
+         _scanned.Insert(0, "Data: " + arg.ToString());
       });
    }
 
@@ -90,32 +86,6 @@ public partial class MainPage : ContentPage
       scan.SetEnable(false);
    }
 
-   private void Button_Clicked_GetParam(object sender, EventArgs e)
-   {
-      int nParam = Int32.Parse(edParam.Text);
-
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.GetScanParam(nParam);
-      // return by MessagingCenter
-   }
-
-   private void Button_Clicked_SetParam(object sender, EventArgs e)
-   {
-      int nParam = Int32.Parse(edParam.Text);
-      int nValue = Int32.Parse(edValue.Text);
-
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.SetScanParam(nParam, nValue);
-   }
-
    private void chkKeyDisable_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
    {
       if (scan == null)
@@ -124,5 +94,25 @@ public partial class MainPage : ContentPage
       };
 
       scan.SetKeyDisable(chkKeyDisable.IsChecked);
+   }
+
+   private void chkVibrate_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
+   {
+      if (scan == null)
+      {
+         scan = new M3Scanner();
+      };
+
+      scan.VibrationEnable(chkVibrate.IsChecked);
+   }
+
+   private void chkBeep_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
+   {
+      if (scan == null)
+      {
+         scan = new M3Scanner();
+      };
+
+      scan.SetSound(chkBeep.IsChecked ? SoundMode.Beep : SoundMode.None);
    }
 }

@@ -5,6 +5,38 @@ using Microsoft.Maui.Controls.PlatformConfiguration;
 
 namespace M3SDKMaui;
 
+public enum SoundMode
+{
+   None = 0,
+   Beep = 1,
+   DingDong = 2
+}
+
+public enum ReadMode
+{
+   Async = 0,
+   Sync = 1,
+   Continuous = 2
+}
+
+public enum EndCharacter
+{
+   Enter = 0,
+   Space = 1,
+   Tab = 2,
+   KeyboardEnter = 3,
+   KeyboardSpace = 4,
+   KeyboardTab = 5,
+   None = 6
+}
+
+public enum OutputMode
+{
+   CopyPaste = 0,
+   KeyboardEmulation = 1,
+   NoneButClipboardCopy = 2
+}
+
 public interface IM3Scanner
 {
    /// <summary>
@@ -50,4 +82,12 @@ public interface IM3Scanner
    /// </summary>
    /// <param name="isEnabled"></param>
    void SetKeyDisable(bool isEnabled);
+
+
+   void SetSound(SoundMode soundMode);
+   void VibrationEnable(bool vibration);
+   void SetReadMode(ReadMode readMode);
+   void SetEndCharacter(EndCharacter endCharacter);
+   void SetOutputMode(OutputMode outputMode);
+
 }

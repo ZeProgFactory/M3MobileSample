@@ -3,7 +3,7 @@ using Android.Content;
 
 namespace M3SDKMaui;
 
-public class M3Scanner : IM3Scanner
+public class M3ScannerHmm : IM3Scanner
 {
    #region - - - define actions & co - - -
 
@@ -56,8 +56,12 @@ public class M3Scanner : IM3Scanner
 
    #endregion
 
-   private ScanReceiver _InternalScanReceiver = new ScanReceiver();
+   ScanReceiver _InternalScanReceiver = null;
 
+   public M3ScannerHmm()
+   {
+      _InternalScanReceiver = new M3ScannerHmm.ScanReceiver(Application.Current);
+   }
 
    /// <summary>
    /// Action start decoding
@@ -84,9 +88,12 @@ public class M3Scanner : IM3Scanner
       // for getting decoding result and setParam, getParam result.
       System.Diagnostics.Debug.WriteLine(String.Format("RegisterReceiver"));
 
-      IntentFilter filter = new IntentFilter();
-      filter.AddAction(SCANNER_ACTION_BARCODE);
-      Android.App.Application.Context.RegisterReceiver(_InternalScanReceiver, filter);
+      if (_InternalScanReceiver != null)
+      {
+         IntentFilter filter = new IntentFilter();
+         filter.AddAction(SCANNER_ACTION_BARCODE);
+         Android.App.Application.Context.RegisterReceiver(_InternalScanReceiver, filter);
+      };
    }
 
    /// <summary>
@@ -95,7 +102,11 @@ public class M3Scanner : IM3Scanner
    public void UnregisterReceiver()
    {
       System.Diagnostics.Debug.WriteLine(String.Format("UnregisterReceiver"));
-      Android.App.Application.Context.UnregisterReceiver(_InternalScanReceiver);
+
+      if (_InternalScanReceiver != null)
+      {
+         Android.App.Application.Context.UnregisterReceiver(_InternalScanReceiver);
+      }
    }
 
    /// <summary>
@@ -135,7 +146,7 @@ public class M3Scanner : IM3Scanner
    }
 
    /// <summary>
-   /// 
+   /// Trigger button disable
    /// </summary>
    /// <param name="isEnabled"></param>
    public void SetKeyDisable(bool isEnabled)
@@ -146,7 +157,6 @@ public class M3Scanner : IM3Scanner
       Android.App.Application.Context.SendBroadcast(intent);
    }
 
-
    public void SetSound(SoundMode soundMode)
    {
       Intent intent = new Intent(SCANNER_ACTION_SETTING_CHANGE);
@@ -154,7 +164,6 @@ public class M3Scanner : IM3Scanner
       intent.PutExtra("sound_mode", (int)soundMode);
       Android.App.Application.Context.SendBroadcast(intent);
    }
-
 
    public void VibrationEnable(bool vibration)
    {
@@ -190,11 +199,18 @@ public class M3Scanner : IM3Scanner
 
    // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 
+   //ToDo: Scanner: class ScanReceiver : BroadcastReceiver
    public class ScanReceiver : BroadcastReceiver
    {
       private String barcode;
       private String type;
-      private App scanApp = new App();
+      //private App scanApp = new App();
+      private Application scanApp;
+
+      public ScanReceiver(Application app)
+      {
+         scanApp = app;
+      }
 
       public override void OnReceive(Context context, Intent intent)
       {
@@ -203,25 +219,28 @@ public class M3Scanner : IM3Scanner
          if (intent.Action.Equals(SCANNER_ACTION_BARCODE))
          {
             barcode = intent.GetStringExtra(SCANNER_EXTRA_BARCODE_DATA);
+
             if (barcode != null)
             {
                // Send Barcode Data
                type = intent.GetStringExtra(SCANNER_EXTRA_BARCODE_CODE_TYPE);
 
-               // MessagingCenter.Send<App, string>(scanApp, "barcode", barcode);
-
-               var barcodeData = new M3Barcode(barcode, type);
-               MessagingCenter.Send<App, M3Barcode>(scanApp, "barcode", barcodeData);
+               MessagingCenter.Send<Application, string>(scanApp, "barcode", barcode);
+               //System.Diagnostics.Debug.WriteLine(String.Format("OnReceive barcode: " + barcode + " type: " + type));
             }
             else
             {
                // Send Parameter data
                int nParam = intent.GetIntExtra("symbology", -1);
                int nValue = intent.GetIntExtra("value", -1);
-               MessagingCenter.Send<App, int>(scanApp, "value", nValue);
-               System.Diagnostics.Debug.WriteLine(String.Format("OnReceive param: " + nParam + " value: " + nValue));
+
+               MessagingCenter.Send<Application, int>(scanApp, "value", nValue);
+               //System.Diagnostics.Debug.WriteLine(String.Format("OnReceive param: " + nParam + " value: " + nValue));
             }
          }
       }
    }
+
+   // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 }
+
