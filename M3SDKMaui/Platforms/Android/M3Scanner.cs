@@ -1,6 +1,5 @@
 ﻿
 using Android.Content;
-using M3SDKMaui;
 
 namespace ScannerM3;
 
@@ -217,7 +216,8 @@ public class M3Scanner : IM3Scanner
       private String barcode;
       private String type;
       //private Application scanApp = new M3SDKMaui.App();
-      private App scanApp = new App();
+      //private App scanApp = new App();
+      private Application scanApp = Application.Current;
 
 
       public OnBarcodeEventHandler OnBarcode { get => _OnBarcode; set => _OnBarcode = value; }
