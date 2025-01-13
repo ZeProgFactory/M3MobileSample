@@ -1,5 +1,6 @@
 ﻿
 using Android.Content;
+using M3SDKMaui;
 
 namespace ScannerM3;
 
@@ -97,9 +98,12 @@ public class M3Scanner : IM3Scanner
       // for getting decoding result and setParam, getParam result.
       System.Diagnostics.Debug.WriteLine(String.Format("RegisterReceiver"));
 
-      IntentFilter filter = new IntentFilter();
-      filter.AddAction(SCANNER_ACTION_BARCODE);
-      Android.App.Application.Context.RegisterReceiver(_InternalScanReceiver, filter);
+      if (_InternalScanReceiver != null)
+      {
+         IntentFilter filter = new IntentFilter();
+         filter.AddAction(SCANNER_ACTION_BARCODE);
+         Android.App.Application.Context.RegisterReceiver(_InternalScanReceiver, filter);
+      }
    }
 
    /// <summary>
@@ -212,7 +216,8 @@ public class M3Scanner : IM3Scanner
    {
       private String barcode;
       private String type;
-      private Application scanApp = new M3SDKMaui.App();
+      //private Application scanApp = new M3SDKMaui.App();
+      private App scanApp = new App();
 
 
       public OnBarcodeEventHandler OnBarcode { get => _OnBarcode; set => _OnBarcode = value; }

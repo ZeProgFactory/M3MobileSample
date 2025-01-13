@@ -207,10 +207,7 @@ public partial class M3ScannerViewModel : INotifyPropertyChanged, IM3Scanner
    public M3ScannerViewModel()
    {
       IsScannerAvailable = Manufacturers.Contains(DeviceInfo.Manufacturer);
-   }
 
-   public void Init()
-   {
       if (IsScannerAvailable)
       {
          _M3Scanner = new M3Scanner();
