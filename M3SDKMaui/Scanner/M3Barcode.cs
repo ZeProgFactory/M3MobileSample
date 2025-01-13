@@ -1,4 +1,4 @@
-﻿namespace M3SDKMaui;
+﻿namespace ScannerM3;
 
 public class M3Barcode
 {

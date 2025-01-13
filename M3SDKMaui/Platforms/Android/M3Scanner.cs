@@ -1,7 +1,7 @@
 ﻿
 using Android.Content;
 
-namespace M3SDKMaui;
+namespace ScannerM3;
 
 public class M3Scanner : IM3Scanner
 {
@@ -58,6 +58,19 @@ public class M3Scanner : IM3Scanner
 
    private ScanReceiver _InternalScanReceiver = new ScanReceiver();
 
+   public M3Scanner()
+   {
+      RegisterReceiver();
+   }
+
+   ~M3Scanner()
+   {
+      UnregisterReceiver();
+   }
+
+   public OnBarcodeEventHandler OnBarcode { get => _InternalScanReceiver.OnBarcode; set => _InternalScanReceiver.OnBarcode = value; }
+
+   // - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 
    /// <summary>
    /// Action start decoding
@@ -95,7 +108,12 @@ public class M3Scanner : IM3Scanner
    public void UnregisterReceiver()
    {
       System.Diagnostics.Debug.WriteLine(String.Format("UnregisterReceiver"));
-      Android.App.Application.Context.UnregisterReceiver(_InternalScanReceiver);
+
+      if (_InternalScanReceiver != null)
+      {
+         Android.App.Application.Context.UnregisterReceiver(_InternalScanReceiver);
+         _InternalScanReceiver = null;
+      }
    }
 
    /// <summary>
@@ -194,7 +212,12 @@ public class M3Scanner : IM3Scanner
    {
       private String barcode;
       private String type;
-      private App scanApp = new App();
+      private Application scanApp = new M3SDKMaui.App();
+
+
+      public OnBarcodeEventHandler OnBarcode { get => _OnBarcode; set => _OnBarcode = value; }
+      OnBarcodeEventHandler _OnBarcode;
+
 
       public override void OnReceive(Context context, Intent intent)
       {
@@ -203,22 +226,28 @@ public class M3Scanner : IM3Scanner
          if (intent.Action.Equals(SCANNER_ACTION_BARCODE))
          {
             barcode = intent.GetStringExtra(SCANNER_EXTRA_BARCODE_DATA);
+
             if (barcode != null)
             {
                // Send Barcode Data
                type = intent.GetStringExtra(SCANNER_EXTRA_BARCODE_CODE_TYPE);
 
-               // MessagingCenter.Send<App, string>(scanApp, "barcode", barcode);
-
                var barcodeData = new M3Barcode(barcode, type);
-               MessagingCenter.Send<App, M3Barcode>(scanApp, "barcode", barcodeData);
+
+               if (OnBarcode != null)
+               {
+                  OnBarcode(this, barcodeData);
+               };
+
+               //// MessagingCenter.Send<App, string>(scanApp, "barcode", barcode);
+               //MessagingCenter.Send<Application, M3Barcode>(scanApp, "barcode", barcodeData);
             }
             else
             {
                // Send Parameter data
                int nParam = intent.GetIntExtra("symbology", -1);
                int nValue = intent.GetIntExtra("value", -1);
-               MessagingCenter.Send<App, int>(scanApp, "value", nValue);
+               MessagingCenter.Send<Application, int>(scanApp, "value", nValue);
                System.Diagnostics.Debug.WriteLine(String.Format("OnReceive param: " + nParam + " value: " + nValue));
             }
          }

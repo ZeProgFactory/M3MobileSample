@@ -1,5 +1,6 @@
 ﻿
 using Android.Content;
+using ScannerM3;
 
 namespace M3SDKMaui;
 

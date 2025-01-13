@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Maui.Controls.PlatformConfiguration;
 
-namespace M3SDKMaui;
+namespace ScannerM3;
 
 public enum SoundMode
 {
@@ -37,8 +37,12 @@ public enum OutputMode
    NoneButClipboardCopy = 2
 }
 
+public delegate void OnBarcodeEventHandler(object sender, M3Barcode barcode);
+
 public interface IM3Scanner
 {
+   public OnBarcodeEventHandler OnBarcode { get; set; }
+
    /// <summary>
    /// Action start decoding
    /// </summary>

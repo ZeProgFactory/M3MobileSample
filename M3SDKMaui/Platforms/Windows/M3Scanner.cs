@@ -1,11 +1,13 @@
 ﻿
-namespace M3SDKMaui;
+namespace ScannerM3;
 
 public class M3Scanner : IM3Scanner
 {
    public M3Scanner()
    {
    }
+
+   public OnBarcodeEventHandler OnBarcode { get; set; }
 
    public void DecodeStart()
    {

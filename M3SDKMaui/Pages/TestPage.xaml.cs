@@ -1,118 +1,76 @@
 ﻿using System.Collections.ObjectModel;
-using static M3SDKMaui.M3Scanner;
-
+using ScannerM3;
 
 namespace M3SDKMaui;
 public partial class TestPage : ContentPage
 {
+   private M3ScannerViewModel vm;
+
    private ObservableCollection<string> _scanned { get; set; }
 
    public TestPage()
    {
+      BindingContext = M3ScannerViewModel.Current;
+      vm = M3ScannerViewModel.Current;
+
       InitializeComponent();
 
       _scanned = new ObservableCollection<string>();
       listView_scanned.ItemsSource = _scanned;
    }
 
-   M3Scanner scan = null;
-
    protected override void OnAppearing()
    {
       base.OnAppearing();
 
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.RegisterReceiver();
-
-      MessagingCenter.Subscribe<App, M3Barcode>(this, "barcode", (sender, arg) =>
-      {
-         _scanned.Insert(0, "Data: " + arg.ToString());
-      });
+      M3ScannerViewModel.Current.OnBarcode += Current_BarcodeReceived;  
    }
 
    protected override void OnDisappearing()
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
+      M3ScannerViewModel.Current.OnBarcode -= Current_BarcodeReceived;
 
-      MessagingCenter.Unsubscribe<App, string>(this, "barcode");
-      scan.UnregisterReceiver();
       base.OnDisappearing();
+   }
+
+
+   private void Current_BarcodeReceived(object sender, M3Barcode barcode)
+   {
+     _scanned.Insert(0, "Data: " + barcode.ToString());
    }
 
    private void Button_Clicked_Start(object sender, EventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.DecodeStart();
+      vm.DecodeStart();
    }
 
    private void Button_Clicked_Stop(object sender, EventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.DecodeStop();
+      vm.DecodeStop();
    }
 
    private void Button_Clicked_Enable(object sender, EventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.SetEnable(true);
+      vm.SetEnable(true);
    }
 
    private void Button_Clicked_Disable(object sender, EventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.SetEnable(false);
+      vm.SetEnable(false);
    }
 
    private void chkKeyDisable_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.SetKeyDisable(chkKeyDisable.IsChecked);
+      vm.SetKeyDisable(chkKeyDisable.IsChecked);
    }
 
    private void chkVibrate_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.VibrationEnable(chkVibrate.IsChecked);
+      vm.VibrationEnable(chkVibrate.IsChecked);
    }
 
    private void chkBeep_CheckedChanged_KeyDisable(object sender, CheckedChangedEventArgs e)
    {
-      if (scan == null)
-      {
-         scan = new M3Scanner();
-      };
-
-      scan.SetSound(chkBeep.IsChecked ? SoundMode.Beep : SoundMode.None);
+      vm.SetSound(chkBeep.IsChecked ? SoundMode.Beep : SoundMode.None);
    }
 }
